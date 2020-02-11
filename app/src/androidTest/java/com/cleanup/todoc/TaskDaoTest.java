@@ -37,7 +37,7 @@ public class TaskDaoTest {
     @Before
     public void initDb() throws Exception {
         //Room nous fournit un builder appelé inMemoryDatabaseBuilder. Ce dernier permet de créer une instance de notre base
-        // de données directement en mémoire (et non dans un fichier sur un périphérique)
+        // de données directement en mémoire (et non dans un fichier sur le périphérique)
         this.database = Room.inMemoryDatabaseBuilder(InstrumentationRegistry.getContext(),
                 TodocDatabase.class)
                 .allowMainThreadQueries()

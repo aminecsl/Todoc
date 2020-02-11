@@ -1,5 +1,7 @@
 package com.cleanup.todoc.ui;
 
+import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -18,12 +20,15 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.cleanup.todoc.R;
+import com.cleanup.todoc.injections.Injection;
+import com.cleanup.todoc.injections.ViewModelFactory;
 import com.cleanup.todoc.model.Project;
 import com.cleanup.todoc.model.Task;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 
 /**
  * <p>Home activity of the application which is displayed when the user opens the app.</p>
@@ -32,21 +37,18 @@ import java.util.Date;
  * @author Gaëtan HERFRAY
  */
 public class MainActivity extends AppCompatActivity implements TasksAdapter.DeleteTaskListener {
+
+    private TaskViewModel mTaskViewModel;
+
     /**
      * List of all projects available in the application
      */
-    private final Project[] allProjects = Project.getAllProjects();
-
-    /**
-     * List of all current tasks of the application
-     */
-    @NonNull
-    private final ArrayList<Task> tasks = new ArrayList<>();
+    private List<Project> allProjects;
 
     /**
      * The adapter which handles the list of tasks
      */
-    private final TasksAdapter adapter = new TasksAdapter(tasks, this);
+    private TasksAdapter adapter;
 
     /**
      * The sort method to be used to display tasks
@@ -78,7 +80,7 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
     // Suppress warning is safe because variable is initialized in onCreate
     @SuppressWarnings("NullableProblems")
     @NonNull
-    private RecyclerView listTasks;
+    private RecyclerView mRecyclerView;
 
     /**
      * The TextView displaying the empty state
@@ -94,11 +96,12 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
 
         setContentView(R.layout.activity_main);
 
-        listTasks = findViewById(R.id.list_tasks);
+        mRecyclerView = findViewById(R.id.list_tasks);
         lblNoTasks = findViewById(R.id.lbl_no_task);
 
-        listTasks.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
-        listTasks.setAdapter(adapter);
+        adapter = new TasksAdapter(this);
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
+        mRecyclerView.setAdapter(adapter);
 
         findViewById(R.id.fab_add_task).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -106,6 +109,9 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
                 showAddTaskDialog();
             }
         });
+        configureViewModel();
+        getAllProjects();
+        getTasks();
     }
 
     @Override
@@ -128,16 +134,35 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
             sortMethod = SortMethod.RECENT_FIRST;
         }
 
-        updateTasks();
+        getTasks();
 
         return super.onOptionsItemSelected(item);
     }
 
-    @Override
-    public void onDeleteTask(Task task) {
-        tasks.remove(task);
-        updateTasks();
+    // -------------------
+    // DATA
+    // -------------------
+
+    // 2 - Configuring ViewModel
+    private void configureViewModel(){
+        ViewModelFactory mViewModelFactory = Injection.provideViewModelFactory(this);
+        mTaskViewModel = ViewModelProviders.of(this, mViewModelFactory).get(TaskViewModel.class);
+        mTaskViewModel.init();
     }
+
+    // -- GET PROJECTS
+    private void getAllProjects(){
+        mTaskViewModel.getAllTheProjetcs().observe(this, this::updateProjects);
+    }
+    private void updateProjects(List<Project> projects) {
+        allProjects = projects;
+    }
+
+    // -- GET TASKS --
+    private void getTasks(){
+        mTaskViewModel.getTasks().observe(this, this::updateTasks);
+    }
+
 
     /**
      * Called when the user clicks on the positive button of the Create Task Dialog.
@@ -162,12 +187,8 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
             }
             // If both project and name of the task have been set
             else if (taskProject != null) {
-                // TODO: Replace this by id of persisted task
-                long id = (long) (Math.random() * 50000);
-
 
                 Task task = new Task(
-                        id,
                         taskProject.getId(),
                         taskName,
                         new Date().getTime()
@@ -208,20 +229,25 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
      * @param task the task to be added to the list
      */
     private void addTask(@NonNull Task task) {
-        tasks.add(task);
-        updateTasks();
+        mTaskViewModel.createTask(task);
+    }
+
+    @Override
+    public void onDeleteTask(Task task) {
+        mTaskViewModel.deleteTask(task);
     }
 
     /**
      * Updates the list of tasks in the UI
      */
-    private void updateTasks() {
+    private void updateTasks(List<Task> tasks) {
         if (tasks.size() == 0) {
+            adapter.updateTasks(tasks);
             lblNoTasks.setVisibility(View.VISIBLE);
-            listTasks.setVisibility(View.GONE);
+            mRecyclerView.setVisibility(View.GONE);
         } else {
             lblNoTasks.setVisibility(View.GONE);
-            listTasks.setVisibility(View.VISIBLE);
+            mRecyclerView.setVisibility(View.VISIBLE);
             switch (sortMethod) {
                 case ALPHABETICAL:
                     Collections.sort(tasks, new Task.TaskAZComparator());

@@ -47,7 +47,7 @@ public abstract class TodocDatabase extends RoomDatabase {
         return INSTANCE;
     }
 
-    //Permet de remplir notre base de données avec un projet de test
+    //Permet de remplir notre base de données avec nos projets fournis
     private static Callback prepopulateDatabase(){
         return new Callback() {
 
@@ -55,12 +55,14 @@ public abstract class TodocDatabase extends RoomDatabase {
             public void onCreate(@NonNull SupportSQLiteDatabase db) {
                 super.onCreate(db);
 
-                ContentValues contentValues = new ContentValues();
-                contentValues.put("id", 9);
-                contentValues.put("name", "Project neuf");
-                contentValues.put("color", 0xFFEADAD1);
-
-                db.insert("Project", OnConflictStrategy.IGNORE, contentValues);
+                Project[] projects = Project.getAllProjects();
+                for (Project project : projects) {
+                    ContentValues contentValues = new ContentValues();
+                    contentValues.put("id", project.getId());
+                    contentValues.put("name", project.getName());
+                    contentValues.put("color", project.getColor());
+                    db.insert("Project", OnConflictStrategy.IGNORE, contentValues);
+                }
             }
         };
     }

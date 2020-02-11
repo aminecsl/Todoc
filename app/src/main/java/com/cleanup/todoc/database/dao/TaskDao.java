@@ -21,7 +21,7 @@ public interface TaskDao {
 
     //Nous avons à disposition les 4 actions CRUD de notre bdd via les méthodes suivantes :
 
-    //TODO : ATTENTION A ADAPTER EN FONCTION DES TACHES QU'ON VEUT BIEN RECUPERER : WHERE projectId = :projectId
+
     @Query("SELECT * FROM Task")
     LiveData<List<Task>> getTasks();
 
