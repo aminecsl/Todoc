@@ -11,11 +11,11 @@ import java.util.Comparator;
 
 /**
  * <p>Model for the tasks of the application.</p>
- *
- * @author Gaëtan HERFRAY
  */
-//On définit notre classe "Task" comme étant une table et on ajoute, à l'intérieur de l'annotation @Entity,
-// la relation clé-étrangère/clé-primaire grâce à l'annotation  @ForeignKey .
+
+//On définit notre classe "Task" comme étant une table en bdd. On ajoute, à l'intérieur de l'annotation @Entity,
+// la relation clé-étrangère/clé-primaire grâce à l'annotation @ForeignKey et le référencement de cette clé étrangère dans l'index
+// de la bdd grâce à l'annotation @Index.
 @Entity(foreignKeys = @ForeignKey(entity = Project.class, parentColumns = "id", childColumns = "projectId"),
         indices = {@Index("projectId")})
 public class Task {

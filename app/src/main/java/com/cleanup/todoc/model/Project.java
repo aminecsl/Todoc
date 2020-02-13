@@ -8,10 +8,9 @@ import android.support.annotation.Nullable;
 
 /**
  * <p>Models for project in which tasks are included.</p>
- *
- * @author Gaëtan HERFRAY
  */
-//On définit notre classe "Project" comme étant une table grâce à l'annotation @Entity
+
+//On définit notre classe "Project" comme étant une table en bdd grâce à l'annotation @Entity
 @Entity
 public class Project {
     /**

@@ -10,6 +10,8 @@ import java.util.List;
 /**
  * Created by Amine K. on 11/02/20.
  */
+
+//Sera utilisé dans notre ViewModel, dans la logique de l'Architecture Components, afin de manipuler les DAO de notre table Project
 public class ProjectDataRepository {
 
     private final ProjectDao projectDao;
@@ -26,6 +28,6 @@ public class ProjectDataRepository {
 
     // -- GET ALL PROJECTS --
 
-    public LiveData<List<Project>> getAllTheProjects() { return this.projectDao.getAllTheProjects(); }
+    public LiveData<List<Project>> getAllTheProjects() { return projectDao.getAllTheProjects(); }
 
 }

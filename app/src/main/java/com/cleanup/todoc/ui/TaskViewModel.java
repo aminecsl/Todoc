@@ -15,11 +15,14 @@ import java.util.concurrent.Executor;
 /**
  * Created by Amine K. on 11/02/20.
  */
+//Son rôle sera de fournir notre activity les données utilisées par l'interface graphique. Une des spécificités de la classe ViewModel
+// est sa capacité à "survivre" aux changements de configuration, comme la rotation de l'écran par exemple, sans perdre ses données...
 public class TaskViewModel extends ViewModel {
 
     // REPOSITORIES
     private final TaskDataRepository taskDataSource;
     private final ProjectDataRepository projectDataSource;
+    //la classe Executor permet de réaliser de manière asynchrone notamment les requêtes de mise à jour de nos tables SQLite.
     private final Executor executor;
 
     // DATA
@@ -67,9 +70,4 @@ public class TaskViewModel extends ViewModel {
         });
     }
 
-    public void updateTask(Task task) {
-        executor.execute(() -> {
-            taskDataSource.updateTask(task);
-        });
-    }
 }

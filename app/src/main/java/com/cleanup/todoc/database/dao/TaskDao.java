@@ -19,7 +19,7 @@ import java.util.List;
 @Dao
 public interface TaskDao {
 
-    //Nous avons à disposition les 4 actions CRUD de notre bdd via les méthodes suivantes :
+    //Nous y plaçons les actions CRUD en bdd qui nous intéressent via les méthodes suivantes :
 
 
     @Query("SELECT * FROM Task")
@@ -28,10 +28,6 @@ public interface TaskDao {
     @Insert
     long insertTask(Task task);
 
-    @Update
-    int updateTask(Task task);
-
-    //Il est aussi possible d'utiliser l'annotation @Delete et de passer directement un objet Task pour le supprimer.
     @Delete
     int deleteTask(Task task);
 

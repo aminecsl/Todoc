@@ -50,6 +50,7 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.TaskViewHold
      */
     void updateTasks(@NonNull final List<Task> tasks) {
         this.tasks = tasks;
+        //Permet à la RV de rafraichir automatiquement la liste à afficher (suite à la mise à jour de notre liste depuis la bdd)
         notifyDataSetChanged();
     }
 

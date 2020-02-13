@@ -10,6 +10,8 @@ import java.util.List;
 /**
  * Created by Amine K. on 11/02/20.
  */
+
+//Sera utilisé dans notre ViewModel, dans la logique de l'Architecture Components, afin de manipuler les DAO de notre table Task
 public class TaskDataRepository {
 
     private final TaskDao taskDao;
@@ -30,6 +32,4 @@ public class TaskDataRepository {
     // --- DELETE ---
     public void deleteTask(Task task){ taskDao.deleteTask(task); }
 
-    // --- UPDATE ---
-    public void updateTask(Task task){ taskDao.updateTask(task); }
 }
