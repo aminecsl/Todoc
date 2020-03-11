@@ -25,6 +25,7 @@ public abstract class TodocDatabase extends RoomDatabase {
     // --- SINGLETON ---
     //un design pattern permettant de créer UNE SEULE FOIS la classe responsable de notre base de données et n'obtenir
     // qu'une seule et unique instance de référence
+    // Volatile : permet d'avoir/utiliser la même variable dans tous les threads et pas une copie
     private static volatile TodocDatabase INSTANCE;
 
     // --- DAO ---

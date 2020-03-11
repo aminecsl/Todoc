@@ -13,6 +13,7 @@ import java.util.concurrent.Executor;
  * Created by Amine K. on 11/02/20.
  */
 //Permet de déporter la construction de notre ViewModel pour ne pas surcharger de code notre activity (contrôleur principal)
+    //Pattern dont le role est d'instancier des classes
 public class ViewModelFactory implements ViewModelProvider.Factory {
 
     private final TaskDataRepository taskDataSource;

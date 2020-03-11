@@ -1,0 +1,206 @@
+@startuml
+
+interface DeleteTaskListener {
++ onDeleteTask(task: Task) : void
+}
+
+class TaskViewHolder <extends RecyclerView.ViewHolder> {
+__fields__
+- imgProject : AppCompatImageView
+- lblTaskName : TextView
+- lblProjectName : TextView
+- imageDelete : AppCompatImageView
+- deleteTaskListener : DeleteTaskListener
+__constructor__
+~ TaskViewHolder(itemView: View , deleteTaskListener: DeleteTaskListener)
+__methods__
+~ bind(task : Task) : void
+}
+
+class TasksAdapter <extends RecyclerView.Adapter> {
+__fields__
+- tasks : List<Task>
+- deleteTaskListener : DeleteTaskListener
+__constructor__
+~ TasksAdapter (deleteTask: DeleteTaskListener)
+__methods__
+~ updateTasks(tasks : List<Task>) : void
++ onCreateViewHolder(viewGroup: viewGroup, viewType: int) : TaskViewHolder
++ onBindViewHolder(taskViewHolder: TaskViewHolder, position: int) : void
++ getItemCount() : int
+}
+
+enum SortMethod{
+__fields__
+~ final ALPHABETICAL : SortMethod
+~ final ALPHABETICAL_INVERTED : SortMethod
+~ final RECENT_FIRST : SortMethod
+~ final OLD_FIRST : SortMethod
+~ final NONE : SortMethod
+}
+
+class MainActivity <extends AppCompatActivity implements TasksAdapter.DeleteTaskListener>{
+__fields__
+- mTaskViewModel : TaskViewModel
+- allProjects : List<Project>
+- adapter : TasksAdapter
+- sortMethod : SortMethod
+- dialog : AlertDialog
+- dialogEditText : EditText
+- dialogSpinner : Spinner
+- mRecyclerView : RecyclerView
+- lblNoTasks : TextView
+__methods__
++ onCreate(savedInstanceState : Bundle) : void
++ onCreateOptionsMenu(menu : Menu) : boolean
++ onOptionsItemSelected(item : MenuItem) : boolean
++ onDeleteTask (task : Task) : void
+- configureViewModel() : void
+- getAllProjects() : void
+- updateProjects(projects : List<Project>) : void
+- getTasks() : void
+- onPositiveButtonClick(dialogInterface : DialogInterface) : void
+- showAddTaskDialog() : void
+- addTask(task : Task) : void
+- updateTasks(tasks : List<Task>) : void
+- getAddTaskDialog() : AlertDialog
+- populateDialogSpinner() : void
+}
+
+class ViewModelFactory <implements ViewModelProvider.Factory>{
+__fields__
+- taskDataSource : TaskDataRepository
+- projectDataSource : ProjectDataRepository
+- executor : Executor
+__constructor__
++ ViewModelFactory(taskDataSource: TaskDataRepository, projectDataSource: ProjectDataRepository, executor: Executor)
+__methods__
++ create(modelClass : Class<T> ) : T
+}
+
+class TaskDataRepository {
+__fields__
+- taskDao : TaskDao
+__constructor__
++ TaskDataRepository(dao : TaskDao)
+__methods__
++ getTasks(): LiveData<List<Task>>
++ createTask(task : Task) : void
++ deleteTask(task : Task) : void
+}
+
+class ProjectDataRepository {
+__fields__
+- projectDao : ProjectDao
+__constructor__
++ ProjectDataRepository(dao : ProjectDao)
+__methods__
++ createProject(project : Project) : void
++ getAllTheProjetcs(): LiveData<List<Project>>
+}
+
+class TaskViewModel <extends ViewModel> {
+__fields__
+- taskDataSource : TaskDataRepository
+- projectDataSource : ProjectDataRepository
+- executor : Executor
+- allProjectsList : LiveData<List<Project>>
+__constructor__
++ TaskViewModel(taskDataSource: TaskDataRepository, projectDataSource: ProjectDataRepository, executor: Executor)
+__methods__
++ init() : void
++ getAllTheProjetcs() : LiveData<List<Project>>
++ getTasks() : LiveData<List<Task>>
++ createTask(task : Task) : void
++ deleteTask (task : Task) : void
+}
+
+interface ProjectDao {
++ createProject(Project project) : void
++ getProject(projectId : long) : LiveData<Project>
++ getAllTheProjects() : LiveData<List<Project>>
+}
+
+interface TaskDao {
++ getTasks() : LiveData<List<Task>>
++ insertTask(task : Task) : void
++ deleteTask(task : Task) : void
+}
+
+abstract class TodocDatabase <extends RoomDatabase> {
+__fields__
+- volatile {static} instance : TodocDatabase
+__methods__
++ {abstract} projectDao() : ProjectDao
++ {abstract} taskDao() : TaskDao
++ {static} getInstance(context : Context)
+- {static} prepopulateDatabase() : Callback
+}
+
+interface Executor {
++ execute(var1 : Runnable) : void
+}
+
+class Injection{
+__methods__
++ {static} provideTaskDataSource(context: Context): TaskDataRepository
++ {static} provideProjectDataSource(context: Context): ProjectDataRepository
++ {static} provideExecutor() : Executor
++ {static} provideViewModelFactory(context : Context) : ViewModelFactory
+}
+
+class Project {
+__fields__
+- id : long
+- name : String
+- color : int
+__constructor__
++ Project(id: long, name: String, color: int)
+__methods__
++ getAllProjects() : Project[]
++ getProjectById(id: long) : Project
++ getId() : long
++ getName() : String
++ getColor : int
++ toString() : String
+}
+
+class Task{
+__fields__
+- id: long
+- projectId: long
+- name: String
+- creationTimestamp: long
+__constructor__
++ Task(projectId: long , name: String, creationTimestamp: long)
+__methods__
++ getId() : long
++ setId(id: long) : void
++ getProjectId() : long
++ setProjectId(projectId: long) : void
++ getProject() : Project
++ getName() : String
++ setName(name: String) : void
++ getCreationTimestamp() : long
++ setCreationTimestamp(creationTimestamp: long) : void
++ equals(o: Object) : boolean
+}
+
+SortMethod -left-+ MainActivity
+MainActivity o-- TaskViewModel
+ProjectDataRepository --o ViewModelFactory
+TaskViewModel o-- ProjectDataRepository
+ViewModelFactory o-left- TaskDataRepository
+TaskViewModel o-- TaskDataRepository
+ProjectDataRepository o-right- ProjectDao
+TaskDataRepository o-left- TaskDao
+MainActivity o-up- TasksAdapter
+TasksAdapter +-up- TaskViewHolder
+MainActivity ..|> DeleteTaskListener
+TaskViewHolder o-- DeleteTaskListener
+TasksAdapter +-left- DeleteTaskListener
+TasksAdapter o-left- DeleteTaskListener
+TaskViewModel o-- Executor
+ViewModelFactory o-right- Executor
+TodocDatabase o-- TodocDatabase
+@enduml

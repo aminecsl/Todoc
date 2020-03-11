@@ -12,6 +12,7 @@ import java.util.List;
  */
 
 //Sera utilisé dans notre ViewModel, dans la logique de l'Architecture Components, afin de manipuler les DAO de notre table Project
+// On cherche ainsi à isoler la source de données (DAO) du ViewModel, afin que ce dernier ne manipule pas directement la source de données.
 public class ProjectDataRepository {
 
     private final ProjectDao projectDao;

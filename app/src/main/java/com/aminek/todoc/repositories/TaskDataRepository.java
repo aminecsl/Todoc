@@ -11,7 +11,8 @@ import java.util.List;
  * Created by Amine K. on 11/02/20.
  */
 
-//Sera utilisé dans notre ViewModel, dans la logique de l'Architecture Components, afin de manipuler les DAO de notre table Task
+//Sera utilisé dans notre ViewModel, dans la logique de l'Architecture Components, afin de manipuler les DAO de notre table Task.
+// On cherche ainsi àisoler la source de données (DAO) du ViewModel, afin que ce dernier ne manipule pas directement la source de données.
 public class TaskDataRepository {
 
     private final TaskDao taskDao;
